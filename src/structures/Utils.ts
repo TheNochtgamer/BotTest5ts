@@ -30,8 +30,6 @@ export default class Utils {
       .filter(f => f.endsWith('.ts'))
       .map(f => path.join(PATH, f));
 
-    // FILES.forEach(f => delete require.cache[require.resolve(f)]);
-
     return FILES;
   }
 

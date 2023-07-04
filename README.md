@@ -4,9 +4,9 @@
 
 ## Features
 
-* Almost everthing typed
+* Almost everything typed
 * Dynamic file imports
-* Pre-build commands, like `/help` `/reload` `/ping`
+* Pre-build commands: `/help` `/ping`
 * Some necessary utils
 
 ## Remember to
