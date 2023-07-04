@@ -55,6 +55,7 @@ export default class Bot extends Client {
   async init(token: string) {
     await Promise.all([this.loadEvents(), this.loadCommands()]);
 
+    console.log('Login in...');
     await this.login(token);
   }
 }
