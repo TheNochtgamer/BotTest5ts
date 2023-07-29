@@ -23,30 +23,37 @@ export default class Utils {
     this.client = client;
   }
 
-  async loadFiles(dirName = '') {
-    const PATH = path.join(process.cwd(), './src', dirName);
-    const FILES = fs
-      .readdirSync(PATH)
-      .filter(f => f.endsWith('.ts'))
-      .map(f => path.join(PATH, f));
-
-    return FILES;
-  }
-
   /**
    * Chequea que un snowflake de discord sea valido
-   * @param {String} id
-   * @returns {Boolean}
    */
   checkId(id: string = ''): boolean {
     return !isNaN(parseInt(id)) && id?.length >= 17 && id?.length <= 20;
   }
 
-  async summitCommands(guildId = process.env.GUILD) {
+  async loadFiles(dirName = '') {
+    const PATH = path.join(__dirname, '../', dirName);
+    const FILES = fs
+      .readdirSync(PATH)
+      .filter(f => f.endsWith('.js') || f.endsWith('.ts'))
+      .map(f => path.join(PATH, f));
+
+    if (!!require) FILES.forEach(f => delete require.cache[require.resolve(f)]);
+
+    return FILES;
+  }
+
+  /**
+   * Carga los slash commands en discord
+   *
+   * @param guildId en caso de ser undefined, intentara cargar los comandos globalmente
+   */
+  async summitCommands(guildId = process.env.GUILDID) {
     if (!this.client.commands.size) return;
     let cmds = null;
 
-    console.log('Subiendo comandos...');
+    console.log(
+      `Subiendo comandos${guildId ? ` (en el guild: ${guildId})` : ''}...`,
+    );
     try {
       if (guildId) {
         const GUILD = await this.client.guilds.fetch(guildId);
@@ -130,11 +137,13 @@ export default class Utils {
   }
 
   /**
-   * Envia una simple confirmacion
+   * Envia una simple solicitud de confirmacion
    *
-   * devuelve 1 si fue aceptada
+   * devuelve 0 si fue aceptada
    *
-   * devuelve 0 si fue rechazada o se quedo sin tiempo
+   * devuelve 1 si fue rechazada
+   *
+   * devuelve 2 si se acabo el tiempo de respuesta
    */
   async confirmationCheck(
     interaction:
@@ -143,6 +152,7 @@ export default class Utils {
       | ModalSubmitInteraction
       | ChatInputCommandInteraction,
     message: string,
+    timeout: number = 30 * 1000,
   ) {
     const row = new ActionRowBuilder<ButtonBuilder>().setComponents(
       new ButtonBuilder()
@@ -167,11 +177,13 @@ export default class Utils {
             ephemeral: true,
           });
 
-    const response = await reply.awaitMessageComponent({ idle: 30 * 1000 });
+    const response = await reply.awaitMessageComponent({ idle: timeout });
 
     await interaction.editReply({ components: [] });
-    if (response.customId === 'accept') return 1;
-    return 0;
+
+    if (response.customId === 'accept') return 0;
+    if (response.customId === 'deny') return 1;
+    return 2;
   }
 }
 

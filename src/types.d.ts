@@ -1,14 +1,11 @@
 import Discord, { ClientEvents } from 'discord.js';
 import Bot from './structures/Bot';
 
-// export interface CommandEvent {
-//   name: string;
+export interface MyReadyEvent {
+  name: 'ready';
 
-//   /**
-//    * La funcion principal del evento
-//    */
-//   run(interaction: Discord.Interaction & { client: Bot }): void | Promise<void>;
-// }
+  run(client: Bot): void | Promise<void>;
+}
 
 export interface MyBotEvents<E extends keyof ClientEvents> {
   name: E;
@@ -17,26 +14,22 @@ export interface MyBotEvents<E extends keyof ClientEvents> {
    * La funcion principal del evento
    */
   run(
-    ...args: [ClientEvents[E][number] & { client: Bot }] // FIXME solo funciona si tiene un solo argumento, con el evento roleUpdate no funciona
-  ): //
-  //   [K in keyof ClientEvents[E]]: { client: Bot } & Omit<
-  //     ClientEvents[E][K],
-  //     'client'
-  //   >;
-  // }
-  // ...args: {
-  // [K in keyof ClientEvents[E]]: ClientEvents[E][K] & { client: Bot };
-  // }
-  void | Promise<void>;
-  // ^?
+    ...args: [ClientEvents[E][number] & { client: Bot }]
+  ): void | Promise<void>;
 }
 
-type arreglo = Array<1 | 2>[0];
+export interface MyBotEvents2Args<E extends keyof ClientEvents> {
+  name: E;
 
-export interface MyReadyEvent {
-  name: 'ready';
-
-  run(client: Bot): void | Promise<void>;
+  /**
+   * La funcion principal del evento
+   */
+  run(
+    ...args: [
+      ClientEvents[E][0] & { client: Bot },
+      ClientEvents[E][1] & { client: Bot },
+    ]
+  ): void | Promise<void>;
 }
 
 export interface MySlashCommand {
@@ -88,9 +81,3 @@ export interface MySlashCommand {
   ): void | Promise<void>;
 }
 
-export type SlashCommandsCollection = Discord.Collection<
-  string,
-  MySlashCommand
->;
-
-export type RateLimits = Discord.Collection<string, Date>;

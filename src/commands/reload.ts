@@ -9,18 +9,12 @@ export default {
   onlyOwners: true,
 
   async run(interaction) {
-    // No hay forma de re-importar los archivos usando ECMAScript imports
-    // asique este archivo queda de ejemplo
-
-    // There is no way to re-import files using ECMAScript imports
-    // so this file remains as reference
-
     const confirm = await interaction.client.utils.confirmationCheck(
       interaction,
       '¿Estas seguro de recargar los comandos y eventos?',
     );
 
-    if (!confirm) {
+    if (confirm) {
       interaction.deleteReply();
       return;
     }

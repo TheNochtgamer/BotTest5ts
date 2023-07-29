@@ -22,7 +22,7 @@ export default class Bot extends Client {
         this.commands.set(command.data.name, command);
         success++;
       } catch (error) {
-        console.log(`Error al cargar el comando "${commandFile}"`, error);
+        console.log(`(/) Error al cargar el comando "${commandFile}"`, error);
       }
     }
 
@@ -45,11 +45,11 @@ export default class Bot extends Client {
         }
         success++;
       } catch (error) {
-        console.log(`Error al cargar el evento "${eventFile}"`, error);
+        console.log(`(E) Error al cargar el evento "${eventFile}"`, error);
       }
     }
 
-    console.log(`(/) ${success}/${FILES.length} eventos cargados`);
+    console.log(`(E) ${success}/${FILES.length} eventos cargados`);
   }
 
   async init(token: string) {
